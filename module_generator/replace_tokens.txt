@@ -1,0 +1,15 @@
+✅xxxEntityxxx
+✅xxxentityxxx
+✅xxxEntityDisplayNamexxx
+
+✅xxxEntityInterfacePropertiesxxx (id is already set)
+✅xxxEntityPropertiesInputsHtmlxxx in HTML
+✅let xxxsetPropertyCodexxx;
+✅let xxxgetPropertyCodexxx;
+ xxxEntityPropertiesInputsHtmlxxx : "",
+✅ ->foreach-> xxxpropertyNamexxx
+
+
+
+#Define
+✅process.env.BASE_URL
