@@ -1,5 +1,5 @@
+import { SwuAlert } from "swu-core";
 import xxxEntityxxxModule from "./module.ts";
-import { SwuAlert } from "../../utils/swu_alert.ts";
 
 export default class xxxEntityxxxController {
 

@@ -1,9 +1,9 @@
-import { SwuFetch, SwuHttpResponse } from "../../utils/swu_fetch.ts";
+import { SwuFetch, SwuHttpResponse } from "swu-core";
 import { xxxEntityxxx } from "./model.ts";
 
 export default class xxxEntityxxxService {
 
-    //TODO: Use more than GET and POST (update SUFetch)
+    //TODO: Use more than GET and POST (update SWUFetch)
 
     async getAllxxxEntityxxx() {
         return await SwuFetch.getJson("xxxentityxxx") as xxxEntityxxx[];

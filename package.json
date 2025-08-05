@@ -1,0 +1,32 @@
+{
+  "name": "swu-cli",
+  "version": "1.0.0",
+  "description": "Code generator for superjojo web utils",
+  "homepage": "https://github.com/superjojo140/swu-cli#readme",
+  "bugs": {
+    "url": "https://github.com/superjojo140/swu-cli/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/superjojo140/swu-cli.git"
+  },
+  "license": "MIT",
+  "author": "superjojo140",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.7",
+    "chalk": "^5.5.0",
+    "inquirer": "^12.9.0",
+    "swu-core": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/bootstrap": "^5.2.10",
+    "@types/chalk": "^0.4.31",
+    "@types/inquirer": "^9.0.8",
+    "@types/node": "^24.2.0"
+  }
+}

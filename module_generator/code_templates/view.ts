@@ -1,7 +1,6 @@
+import { SwuDom, TableSortable } from "swu-core";
 import { xxxEntityxxx } from "./model.ts";
 import xxxEntityxxxModule from "./module.ts";
-import { SwuDom } from "../../utils/swu_dom.ts";
-import { TableSortable } from "../../utils/table-sortable/ts_wrapper.js";
 import Modal from "bootstrap/js/dist/modal.ts";
 
 export default class xxxEntityxxxView {
