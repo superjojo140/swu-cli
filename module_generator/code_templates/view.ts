@@ -1,6 +1,6 @@
 import { SwuDom, SwuTable } from "swu-core";
-import { xxxEntityxxx } from "./model.js";
-import xxxEntityxxxModule from "./module.js";
+import { xxxEntityxxx } from "./model";
+import xxxEntityxxxModule from "./module";
 import Modal from "bootstrap/js/dist/modal.js";
 
 export default class xxxEntityxxxView {
@@ -21,7 +21,7 @@ export default class xxxEntityxxxView {
 
         let tableColumns = [
             { title: "Id", field: "id"},
-            //xxxEntityPropertiesTablexxx //TODO:nicer replace selector
+            { title: "", field: "xxxEntityPropertiesTablexxx"},
         ]
         //TODO: Make table filter fit with tabulator lib
         let searchInput = SwuDom.querySelectorAsInput("#swu_xxxentityxxx_filter_input");

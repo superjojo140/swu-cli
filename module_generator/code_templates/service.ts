@@ -1,5 +1,5 @@
 import { SwuFetch, SwuHttpResponse } from "swu-core";
-import { xxxEntityxxx } from "./model.js";
+import { xxxEntityxxx } from "./model";
 
 export default class xxxEntityxxxService {
 

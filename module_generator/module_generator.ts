@@ -105,7 +105,7 @@ async function promptForEntityDisplayName() {
 
         }
         content = content.replace(/xxxEntityInterfacePropertiesxxx/g, interfaceProperties);
-        content = content.replace(/\/\/xxxEntityPropertiesTablexxx : "",/g, tableProperties);
+        content = content.replace(/{ title: "", field: "xxxEntityPropertiesTablexxx"},/g, tableProperties);
         content = content.replace(/let xxxsetPropertyCodexxx;/g, setValueTs);
         content = content.replace(/let xxxgetPropertyCodexxx;/g, getValueTs);
         content = content.replace(/xxxEntityPropertiesInputsHtmlxxx/g, propertiesHtml);

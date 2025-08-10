@@ -1,6 +1,6 @@
-import xxxEntityxxxController from "./controller.js";
-import xxxEntityxxxService from "./service.js";
-import xxxEntityxxxView from "./view.js";
+import xxxEntityxxxController from "./controller";
+import xxxEntityxxxService from "./service";
+import xxxEntityxxxView from "./view";
 
 export default class xxxEntityxxxModule {
 
