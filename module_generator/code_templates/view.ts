@@ -1,16 +1,16 @@
-import { SwuDom, TableSortable } from "swu-core";
-import { xxxEntityxxx } from "./model.ts";
-import xxxEntityxxxModule from "./module.ts";
-import Modal from "bootstrap/js/dist/modal.ts";
+import { SwuDom, SwuTable } from "swu-core";
+import { xxxEntityxxx } from "./model.js";
+import xxxEntityxxxModule from "./module.js";
+import Modal from "bootstrap/js/dist/modal.js";
 
 export default class xxxEntityxxxView {
 
-    table: TableSortable;
+    dataTable: SwuTable;
     modalElem: HTMLElement;
     modal: Modal;
     modalForm: HTMLFormElement = SwuDom.querySelector("#swu_xxxentityxxx_modal_form") as HTMLFormElement;
 
-    async init() {
+    constructor() {
 
         this.modalElem = SwuDom.querySelector('#swu_xxxentityxxx_modal');
         this.modal = new Modal(this.modalElem);
@@ -19,13 +19,14 @@ export default class xxxEntityxxxView {
         this.modalElem.addEventListener("hide.bs.modal", xxxEntityxxxModule.controller.refreshxxxEntityxxxList);
 
 
-        let tableColumns = {
-            id: "Id",
-            xxxEntityPropertiesTablexxx : "",
-        }
+        let tableColumns = [
+            { title: "Id", field: "id"},
+            //xxxEntityPropertiesTablexxx //TODO:nicer replace selector
+        ]
+        //TODO: Make table filter fit with tabulator lib
         let searchInput = SwuDom.querySelectorAsInput("#swu_xxxentityxxx_filter_input");
         let searchInputClear = SwuDom.querySelectorAsInput("#swu_xxxentityxxx_filter_clear_button");
-        this.table = new TableSortable("#swu_xxxentityxxx_table", tableColumns, searchInput, searchInputClear, 10, this.registerListItemButtons);
+        this.dataTable = new SwuTable("#swu_xxxentityxxx_table", tableColumns);
 
         SwuDom.addEventListener("#swu_xxxentityxxx_create_button", "click", xxxEntityxxxModule.controller.showxxxEntityxxxModalForCreate);
 
@@ -48,7 +49,7 @@ export default class xxxEntityxxxView {
             tableDataList.push(xxxentityxxx);
         }
 
-        this.table.update(tableDataList, "id"); //button events are registered by table's onUpdate function
+        this.dataTable.update(tableDataList);
         SwuDom.querySelectorAsInput("#swu_xxxentityxxx_filter_input").value = "";
     }
 

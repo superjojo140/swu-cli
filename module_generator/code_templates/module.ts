@@ -15,7 +15,6 @@ export default class xxxEntityxxxModule {
         xxxEntityxxxModule.controller = new xxxEntityxxxController();
         xxxEntityxxxModule.view = new xxxEntityxxxView();
 
-        await xxxEntityxxxModule.view.init();
         await xxxEntityxxxModule.controller.init();
     }
 }

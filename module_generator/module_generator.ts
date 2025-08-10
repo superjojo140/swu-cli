@@ -1,7 +1,12 @@
+#!/usr/bin/env node
 import * as fs from 'fs';
 import * as path from 'path';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 async function promptForEntityName() {
@@ -67,7 +72,7 @@ async function promptForEntityDisplayName() {
     }
 
     // Read template files from code_templates/ and replace xxx tokens with the actual entity name
-    const templatesDir = path.join(__dirname, 'code_templates');
+    const templatesDir = path.join(__dirname, '../module_generator/code_templates'); //TEST: is this file referencing good?
     
     const templateFiles = fs.readdirSync(templatesDir);
 
@@ -96,11 +101,11 @@ async function promptForEntityDisplayName() {
             setValueTs += `    SwuDom.querySelectorAsInput("#swu_${entityNameLowerCase}_modal_form_${propertyName}").value = ${entityNameLowerCase}Data.${propertyName};\n`;
 
             interfaceProperties += `    ${propertyName}: string;\n`;
-            tableProperties += `    ${propertyName}: "${propertyName}",\n`;
+            tableProperties += `    { title: "${propertyName}", field: "${propertyName}"},\n`;
 
         }
         content = content.replace(/xxxEntityInterfacePropertiesxxx/g, interfaceProperties);
-        content = content.replace(/xxxEntityPropertiesTablexxx : "",/g, tableProperties);
+        content = content.replace(/\/\/xxxEntityPropertiesTablexxx : "",/g, tableProperties);
         content = content.replace(/let xxxsetPropertyCodexxx;/g, setValueTs);
         content = content.replace(/let xxxgetPropertyCodexxx;/g, getValueTs);
         content = content.replace(/xxxEntityPropertiesInputsHtmlxxx/g, propertiesHtml);
