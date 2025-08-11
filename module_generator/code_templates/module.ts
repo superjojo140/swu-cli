@@ -21,7 +21,6 @@ export default class xxxEntityxxxModule {
     }
 }
 
-await xxxEntityxxxModule.init();
 
 
 
