@@ -101,7 +101,7 @@ async function promptForEntityDisplayName() {
             setValueTs += `    SwuDom.querySelectorAsInput("#swu_${entityNameLowerCase}_modal_form_${propertyName}").value = ${entityNameLowerCase}Data.${propertyName};\n`;
 
             interfaceProperties += `    ${propertyName}: string;\n`;
-            tableProperties += `    { title: "${propertyName}", field: "${propertyName}"},\n`;
+            tableProperties += `    { title: "${propertyName}", field: "${propertyName}", headerFilter:"input"},\n`;
 
         }
         content = content.replace(/xxxEntityInterfacePropertiesxxx/g, interfaceProperties);
