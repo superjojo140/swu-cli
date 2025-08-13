@@ -20,8 +20,8 @@ export default class xxxEntityxxxView {
 
 
         let tableColumns = [
-            { title: "Id", field: "id"},
-            { title: "", field: "xxxEntityPropertiesTablexxx"},
+            { title: "Id", field: "id", formatter: "html" },
+            { title: "", field: "xxxEntityPropertiesTablexxx" },
         ]
         //TODO: Make table filter fit with tabulator lib
         let searchInput = SwuDom.querySelectorAsInput("#swu_xxxentityxxx_filter_input");
@@ -46,10 +46,12 @@ export default class xxxEntityxxxView {
             let deleteBtn = `&nbsp;<button class="btn btn-danger btn-sm swu-xxxentityxxx-delete-btn" type="button" data-swu-xxxentityxxx-id="${xxxentityxxx.id}">
                                 <i class="far fa-trash-alt"></i> Delete
                              </button>`;
+            xxxentityxxx.id = editBtn + deleteBtn + "&nbsp;" + xxxentityxxx.id;
             tableDataList.push(xxxentityxxx);
         }
 
         this.dataTable.update(tableDataList);
+        this.registerListItemButtons();
         SwuDom.querySelectorAsInput("#swu_xxxentityxxx_filter_input").value = "";
     }
 
