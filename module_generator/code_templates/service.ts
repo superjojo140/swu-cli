@@ -1,33 +1,50 @@
-import { SwuFetch, SwuHttpResponse } from "swu-core";
+import { SwuHttpResponse } from "swu-core";
 import { xxxEntityxxx } from "./model";
 
 export default class xxxEntityxxxService {
 
-    //TODO: Use more than GET and POST (update SWUFetch)
-
     async getAllxxxEntityxxx() {
-        return await SwuFetch.getJson("xxxentityxxx") as xxxEntityxxx[];
+        const resp = await fetch("xxxentityxxx");
+        return await resp.json() as xxxEntityxxx[];
     }
 
     async getxxxEntityxxx(xxxentityxxxId: string) {
-        return await SwuFetch.getJson(`xxxentityxxx/${xxxentityxxxId}`) as xxxEntityxxx;
+        const resp = await fetch(`xxxentityxxx/${xxxentityxxxId}`);
+        return await resp.json() as xxxEntityxxx;
     }
 
     async updatexxxEntityxxx(xxxentityxxxData: xxxEntityxxx) {
-        let resp = await SwuFetch.postJson(`xxxentityxxx/${xxxentityxxxData.id}`, xxxentityxxxData) as SwuHttpResponse;
-        if (resp.status == "error") { throw new Error(resp.message) };
-        return resp;
+        const resp = await fetch(`xxxentityxxx/${xxxentityxxxData.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(xxxentityxxxData)
+        });
+
+        const respJson = await resp.json() as SwuHttpResponse;
+        if (respJson.status == "error") { throw new Error(respJson.message) };
+        return respJson;
     }
 
     async createxxxEntityxxx(xxxentityxxxData: Omit<xxxEntityxxx, "id">) {
-        let resp = await SwuFetch.postJson(`xxxentityxxx`, xxxentityxxxData) as SwuHttpResponse;
-        if (resp.status == "error") { throw new Error(resp.message) };
-        return resp;
+        const resp = await fetch(`xxxentityxxx`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(xxxentityxxxData)
+        });
+
+        const respJson = await resp.json() as SwuHttpResponse;
+        if (respJson.status == "error") { throw new Error(respJson.message) };
+        return respJson;
     }
 
     async deletexxxEntityxxx(xxxentityxxxId: string) {
-        let resp = await SwuFetch.getJson(`xxxentityxxx/${xxxentityxxxId}`) as SwuHttpResponse;
-        if (resp.status == "error") { throw new Error(resp.message) };
-        return resp;
+        const resp = await fetch(`xxxentityxxx/${xxxentityxxxId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" }
+        });
+
+        const respJson = await resp.json() as SwuHttpResponse;
+        if (respJson.status == "error") { throw new Error(respJson.message) };
+        return respJson;
     }
 }
