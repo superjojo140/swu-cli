@@ -46,9 +46,9 @@ export default class xxxEntityxxxController {
 
     async handlexxxEntityxxxDelete(xxxentityxxxId: string) {
         try {
-            let confirmResp = await SwuAlert.deleteConfirm("Nutzeraccount löschen", "Soll der Nutzeraccount wirklich gelöscht werden?");
+            let confirmResp = await SwuAlert.deleteConfirm("Delete xxxEntityDisplayNamexxx", "Do you really want to delete this xxxEntityDisplayNamexxx?");
             let resp = await xxxEntityxxxModule.service.deletexxxEntityxxx(xxxentityxxxId);
-            SwuAlert.alertResp(resp, "Nutzeraccount Löschen");
+            SwuAlert.alertResp(resp, "Delete xxxEntityDisplayNamexxx");
             await this.refreshxxxEntityxxxList();
         } catch (error) {
             SwuAlert.alertError(error);
