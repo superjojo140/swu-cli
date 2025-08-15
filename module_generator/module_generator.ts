@@ -72,7 +72,7 @@ async function promptForEntityDisplayName() {
     }
 
     // Read template files from code_templates/ and replace xxx tokens with the actual entity name
-    const templatesDir = path.join(__dirname, '../module_generator/code_templates'); //TEST: is this file referencing good?
+    const templatesDir = path.join(__dirname, '../module_generator/code_templates');
     
     const templateFiles = fs.readdirSync(templatesDir);
 
@@ -105,7 +105,7 @@ async function promptForEntityDisplayName() {
 
         }
         content = content.replace(/xxxEntityInterfacePropertiesxxx/g, interfaceProperties);
-        content = content.replace(/{ title: "", field: "xxxEntityPropertiesTablexxx"},/g, tableProperties);
+        content = content.replace(/{ title: "", field: "xxxEntityPropertiesTablexxx" },/g, tableProperties);
         content = content.replace(/let xxxsetPropertyCodexxx;/g, setValueTs);
         content = content.replace(/let xxxgetPropertyCodexxx;/g, getValueTs);
         content = content.replace(/xxxEntityPropertiesInputsHtmlxxx/g, propertiesHtml);

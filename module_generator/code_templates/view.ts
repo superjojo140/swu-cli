@@ -20,12 +20,10 @@ export default class xxxEntityxxxView {
 
 
         let tableColumns = [
-            { title: "Id", field: "id", formatter: "html" },
+            { title: "", field: "swuTableActionButtons", formatter: "html", headerSort: false, headerFilter: false },
+            { title: "Id", field: "id", formatter: "html", sorter: "number", headerFilter: "input" },
             { title: "", field: "xxxEntityPropertiesTablexxx" },
         ]
-        //TODO: Make table filter fit with tabulator lib
-        let searchInput = SwuDom.querySelectorAsInput("#swu_xxxentityxxx_filter_input");
-        let searchInputClear = SwuDom.querySelectorAsInput("#swu_xxxentityxxx_filter_clear_button");
         this.dataTable = new SwuTable("#swu_xxxentityxxx_table", tableColumns);
 
         SwuDom.addEventListener("#swu_xxxentityxxx_create_button", "click", xxxEntityxxxModule.controller.showxxxEntityxxxModalForCreate);
@@ -36,23 +34,23 @@ export default class xxxEntityxxxView {
 
 
     async updateListView(xxxentityxxxList: xxxEntityxxx[]) {
-        let tableDataList: xxxEntityxxx[] = [];
+        interface xxxentityxxxTableDataset extends xxxEntityxxx { swuTableActionButtons: string };
+        let tableDataList: xxxentityxxxTableDataset[] = [];
 
         for (let xxxentityxxxId in xxxentityxxxList) {
-            let xxxentityxxx = xxxentityxxxList[xxxentityxxxId] as xxxEntityxxx;
+            let xxxentityxxx = xxxentityxxxList[xxxentityxxxId] as xxxentityxxxTableDataset;
             let editBtn = `<button type="button" class="btn btn-primary btn-sm swu-xxxentityxxx-edit-btn" data-swu-xxxentityxxx-id="${xxxentityxxx.id}">
                                 <i class="fas fa-pencil-alt"></i>&nbsp; Edit
                            </button>`;
             let deleteBtn = `&nbsp;<button class="btn btn-danger btn-sm swu-xxxentityxxx-delete-btn" type="button" data-swu-xxxentityxxx-id="${xxxentityxxx.id}">
                                 <i class="far fa-trash-alt"></i> Delete
                              </button>`;
-            xxxentityxxx.id = editBtn + deleteBtn + "&nbsp;" + xxxentityxxx.id;
+            xxxentityxxx.swuTableActionButtons = editBtn + deleteBtn;
             tableDataList.push(xxxentityxxx);
         }
 
         this.dataTable.update(tableDataList);
         this.registerListItemButtons();
-        SwuDom.querySelectorAsInput("#swu_xxxentityxxx_filter_input").value = "";
     }
 
     registerListItemButtons() {

@@ -12,7 +12,7 @@ export default class xxxEntityxxxModule {
     static view: xxxEntityxxxView;
 
     static async init() {
-        await SwuDom.loadHtml("markup.html");
+        await SwuDom.loadHtml("xxxEntityxxx/markup.html");
         xxxEntityxxxModule.service = new xxxEntityxxxService();
         xxxEntityxxxModule.controller = new xxxEntityxxxController();
         xxxEntityxxxModule.view = new xxxEntityxxxView();
