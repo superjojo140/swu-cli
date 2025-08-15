@@ -1,5 +1,5 @@
 import { SwuDom, SwuTable } from "swu-core";
-import { xxxEntityxxx } from "./model";
+import { xxxEntityxxx } from "../model/model";
 import xxxEntityxxxModule from "./module";
 import Modal from "bootstrap/js/dist/modal.js";
 

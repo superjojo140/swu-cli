@@ -11,7 +11,8 @@
     "noImplicitAny": false,
   },
   "include": [
-    "module_generator"
+    "src/**/*.ts",
+    "code_templates/++/*.ts"
   ],
   "exclude": [
     "node_modules",

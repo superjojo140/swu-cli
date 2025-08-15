@@ -38,7 +38,7 @@ async function promptForPropertyNames(): Promise<string[]> {
         }
         propertyNames.push(propertyName.trim());
         console.log(`Set property: ${chalk.blueBright(propertyName.trim())}`);
-        
+
     }
     return propertyNames;
 }
@@ -55,37 +55,47 @@ async function promptForEntityDisplayName() {
     return answers.entityDisplayName;
 }
 
+function createModuleDirectory(entityName: string, target: ModuleTarget) {
+    const targetPath = path.join(process.cwd(), `src/${target}`);
+    const modulePath = path.join(targetPath, entityName);
+
+    //Ensure swu project setup is correct
+    if (!fs.existsSync(targetPath)) {
+        console.log(chalk.redBright(`❌ Directory ${chalk.bold(modulePath)} does not exist. Please make sure you have initialized your swu-project with "swu init" and you are calling this command from your project root`));
+        process.exit(1); //Cancel here
+    }
+
+
+    // Ensure the module directory exists
+    if (!fs.existsSync(modulePath)) {
+        fs.mkdirSync(modulePath);
+        console.log(chalk.greenBright(`📁 Created directory: ${entityName}`));
+    } else {
+        console.log(chalk.yellowBright(`⚠️ Directory ${entityName} already exists, skipping creation.`));
+    }
+
+    return modulePath;
+}
+
 (async () => {
     const entityName: string = await promptForEntityName();
     const entityNameLowerCase = entityName.toLowerCase();
     const entityDisplayName: string = await promptForEntityDisplayName();
     const propertyNames: string[] = await promptForPropertyNames();
 
-    const entityDir = path.join(process.cwd(), entityName);
-
-    // Ensure the entity directory exists
-    if (!fs.existsSync(entityDir)) {
-        fs.mkdirSync(entityDir);
-        console.log(chalk.greenBright(`📁 Created directory: ${entityName}`));
-    } else {
-        console.log(chalk.yellowBright(`⚠️ Directory ${entityName} already exists, skipping creation.`));
-    }
+    const frontendModuleDir = createModuleDirectory(entityName, 'frontend');
 
     // Read template files from code_templates/ and replace xxx tokens with the actual entity name
-    const templatesDir = path.join(__dirname, '../module_generator/code_templates');
-    
-    const templateFiles = fs.readdirSync(templatesDir);
+    const frontendTemplatesDir = path.join(__dirname, '../code_templates/frontend');
+    const frontendTemplateFiles = fs.readdirSync(frontendTemplatesDir);
 
-    const entityFiles = templateFiles.map(fileName => {
-        const templatePath = path.join(templatesDir, fileName);
-        let content = fs.readFileSync(templatePath, 'utf8');
-        let propertiesHtml = '';
-        let setValueTs = '';
-        let getValueTs = '';
-        let interfaceProperties = '';
-        let tableProperties = '';
-        for (const propertyName of propertyNames) {
-            propertiesHtml += `
+    let propertiesHtml = '';
+    let setValueTs = '';
+    let getValueTs = '';
+    let interfaceProperties = '';
+    let tableProperties = '';
+    for (const propertyName of propertyNames) {
+        propertiesHtml += `
                 <div class="row">
                     <div class="col-md">
                     <div class="mb-3">
@@ -96,14 +106,19 @@ async function promptForEntityDisplayName() {
                 </div>
                 `;
 
-            getValueTs += `    ${entityNameLowerCase}Data.${propertyName} = SwuDom.querySelectorAsInput("#swu_${entityNameLowerCase}_modal_form_${propertyName}").value;\n`;
+        getValueTs += `    ${entityNameLowerCase}Data.${propertyName} = SwuDom.querySelectorAsInput("#swu_${entityNameLowerCase}_modal_form_${propertyName}").value;\n`;
 
-            setValueTs += `    SwuDom.querySelectorAsInput("#swu_${entityNameLowerCase}_modal_form_${propertyName}").value = ${entityNameLowerCase}Data.${propertyName};\n`;
+        setValueTs += `    SwuDom.querySelectorAsInput("#swu_${entityNameLowerCase}_modal_form_${propertyName}").value = ${entityNameLowerCase}Data.${propertyName};\n`;
 
-            interfaceProperties += `    ${propertyName}: string;\n`;
-            tableProperties += `    { title: "${propertyName}", field: "${propertyName}", headerFilter:"input"},\n`;
+        interfaceProperties += `    ${propertyName}: string;\n`;
+        tableProperties += `    { title: "${propertyName}", field: "${propertyName}", headerFilter:"input"},\n`;
 
-        }
+    }
+
+    const generatedFrontendFiles = frontendTemplateFiles.map(fileName => {
+        const templatePath = path.join(frontendTemplatesDir, fileName);
+        let content = fs.readFileSync(templatePath, 'utf8');
+
         content = content.replace(/xxxEntityInterfacePropertiesxxx/g, interfaceProperties);
         content = content.replace(/{ title: "", field: "xxxEntityPropertiesTablexxx" },/g, tableProperties);
         content = content.replace(/let xxxsetPropertyCodexxx;/g, setValueTs);
@@ -113,16 +128,11 @@ async function promptForEntityDisplayName() {
         content = content.replace(/xxxEntityxxx/g, entityName);
         content = content.replace(/xxxentityxxx/g, entityNameLowerCase);
 
-
-
-        return {
-            name: fileName,
-            content
-        };
+        return { name: fileName, content };
     });
 
-    entityFiles.forEach(file => {
-        const filePath = path.join(entityDir, file.name);
+    generatedFrontendFiles.forEach(file => {
+        const filePath = path.join(frontendModuleDir, file.name);
         if (!fs.existsSync(filePath)) {
             fs.writeFileSync(filePath, file.content, { encoding: 'utf8' });
             console.log(chalk.greenBright(`📄 Created ${entityName}/${file.name}`));
@@ -135,5 +145,8 @@ async function promptForEntityDisplayName() {
     console.log(`ℹ️  Make sure to define ${chalk.bold("process.env.BASE_URL")} because the generated code depends on it.`);
 
 })();
+
+
+type ModuleTarget = "frontend" | "backend";
 
 
