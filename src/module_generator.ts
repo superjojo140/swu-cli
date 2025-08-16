@@ -8,6 +8,21 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+(async () => {
+    const { entityName, entityDisplayName, propertyNames } = await askForUserInput();
+    let replaceValues = generateReplaceValues(entityName, entityDisplayName, propertyNames);
+
+    const targets: ModuleTarget[] = ["frontend", "backend", "model"];
+    for (const target of targets) {
+        const moduleDir = createModuleDirectory(entityName, target);
+        generateFiles(replaceValues, target);
+    }
+
+    printModuleCreationStatus(entityName);
+})();
+
+
+
 
 async function promptForEntityName() {
     const answers = await inquirer.prompt([
@@ -58,42 +73,87 @@ async function promptForEntityDisplayName() {
 function createModuleDirectory(entityName: string, target: ModuleTarget) {
     const targetPath = path.join(process.cwd(), `src/${target}`);
     const modulePath = path.join(targetPath, entityName);
+    const relativePath = `src/${target}/${entityName}`;
 
     //Ensure swu project setup is correct
     if (!fs.existsSync(targetPath)) {
-        console.log(chalk.redBright(`❌ Directory ${chalk.bold(modulePath)} does not exist. Please make sure you have initialized your swu-project with "swu init" and you are calling this command from your project root`));
+        console.log(chalk.redBright(`❌ Directory ${chalk.bold(targetPath)} does not exist. Please make sure you have initialized your swu-project with "swu init" and you are calling this command from your project root`));
         process.exit(1); //Cancel here
     }
-
 
     // Ensure the module directory exists
     if (!fs.existsSync(modulePath)) {
         fs.mkdirSync(modulePath);
-        console.log(chalk.greenBright(`📁 Created directory: ${entityName}`));
+        console.log(chalk.greenBright(`📁 Created directory: ${relativePath}`));
     } else {
-        console.log(chalk.yellowBright(`⚠️ Directory ${entityName} already exists, skipping creation.`));
+        console.log(chalk.yellowBright(`⚠️ Directory ${relativePath} already exists, skipping creation.`));
     }
 
     return modulePath;
 }
 
-(async () => {
+
+
+
+function printModuleCreationStatus(entityName: string) {
+    console.log(chalk.bold(chalk.greenBright(`\n✅ Created ${entityName} Module successfully!\n`)));
+    console.log(`ℹ️  Make sure to define ${chalk.bold("process.env.BASE_URL")} because the generated code depends on it.`);
+}
+
+async function askForUserInput() {
     const entityName: string = await promptForEntityName();
-    const entityNameLowerCase = entityName.toLowerCase();
     const entityDisplayName: string = await promptForEntityDisplayName();
     const propertyNames: string[] = await promptForPropertyNames();
+    return { entityName, entityDisplayName, propertyNames };
+}
 
-    const frontendModuleDir = createModuleDirectory(entityName, 'frontend');
+// Read template files from code_templates/ and replace xxx tokens with the actual entity name
+function generateFiles(replaceValues: ReplaceValues, target: ModuleTarget) {
+    //read template files
+    const templatesDir = path.join(__dirname, `../code_templates/${target}/xxxEntityxxx`);
+    const templateFiles = fs.readdirSync(templatesDir);
 
-    // Read template files from code_templates/ and replace xxx tokens with the actual entity name
-    const frontendTemplatesDir = path.join(__dirname, '../code_templates/frontend');
-    const frontendTemplateFiles = fs.readdirSync(frontendTemplatesDir);
+    //generate output path
+    const relativeOutputDir = `src/${target}/${replaceValues.entityName}`;
+    const absolutOutputDir = path.join(process.cwd(), relativeOutputDir);
 
+    //replace values in all found files
+    const generatedFiles = templateFiles.map(fileName => {
+        const templatePath = path.join(templatesDir, fileName);
+        let content = fs.readFileSync(templatePath, 'utf8');
+
+        content = content.replace(/xxxEntityInterfacePropertiesxxx/g, replaceValues.interfaceProperties);
+        content = content.replace(/{ title: "", field: "xxxEntityPropertiesTablexxx" },/g, replaceValues.tableProperties);
+        content = content.replace(/let xxxsetPropertyCodexxx;/g, replaceValues.setValueTs);
+        content = content.replace(/let xxxgetPropertyCodexxx;/g, replaceValues.getValueTs);
+        content = content.replace(/xxxEntityPropertiesInputsHtmlxxx/g, replaceValues.propertiesHtml);
+        content = content.replace(/xxxEntityDisplayNamexxx/g, replaceValues.entityDisplayName);
+        content = content.replace(/xxxEntityxxx/g, replaceValues.entityName);
+        content = content.replace(/xxxentityxxx/g, replaceValues.entityNameLowerCase);
+
+        return { name: fileName, content };
+    });
+
+
+    //write new files
+    generatedFiles.forEach(file => {
+        const filePath = path.join(absolutOutputDir, file.name);
+        if (!fs.existsSync(filePath)) {
+            fs.writeFileSync(filePath, file.content, { encoding: 'utf8' });
+            console.log(chalk.greenBright(`📄 Created ${file.name}`));
+        } else {
+            console.log(chalk.yellowBright(`${relativeOutputDir}/${file.name} already exists, skipping.`));
+        }
+    });
+}
+
+function generateReplaceValues(entityName: string, entityDisplayName: string, propertyNames: string[]): ReplaceValues {
     let propertiesHtml = '';
     let setValueTs = '';
     let getValueTs = '';
     let interfaceProperties = '';
     let tableProperties = '';
+    const entityNameLowerCase = entityName.toLowerCase();
     for (const propertyName of propertyNames) {
         propertiesHtml += `
                 <div class="row">
@@ -114,39 +174,18 @@ function createModuleDirectory(entityName: string, target: ModuleTarget) {
         tableProperties += `    { title: "${propertyName}", field: "${propertyName}", headerFilter:"input"},\n`;
 
     }
+    return { interfaceProperties, tableProperties, setValueTs, getValueTs, propertiesHtml, entityNameLowerCase, entityName, entityDisplayName };
+}
 
-    const generatedFrontendFiles = frontendTemplateFiles.map(fileName => {
-        const templatePath = path.join(frontendTemplatesDir, fileName);
-        let content = fs.readFileSync(templatePath, 'utf8');
+interface ReplaceValues {
+    interfaceProperties: string;
+    tableProperties: string;
+    setValueTs: string;
+    getValueTs: string;
+    propertiesHtml: string;
+    entityNameLowerCase: string;
+    entityName: string;
+    entityDisplayName: string;
+}
 
-        content = content.replace(/xxxEntityInterfacePropertiesxxx/g, interfaceProperties);
-        content = content.replace(/{ title: "", field: "xxxEntityPropertiesTablexxx" },/g, tableProperties);
-        content = content.replace(/let xxxsetPropertyCodexxx;/g, setValueTs);
-        content = content.replace(/let xxxgetPropertyCodexxx;/g, getValueTs);
-        content = content.replace(/xxxEntityPropertiesInputsHtmlxxx/g, propertiesHtml);
-        content = content.replace(/xxxEntityDisplayNamexxx/g, entityDisplayName);
-        content = content.replace(/xxxEntityxxx/g, entityName);
-        content = content.replace(/xxxentityxxx/g, entityNameLowerCase);
-
-        return { name: fileName, content };
-    });
-
-    generatedFrontendFiles.forEach(file => {
-        const filePath = path.join(frontendModuleDir, file.name);
-        if (!fs.existsSync(filePath)) {
-            fs.writeFileSync(filePath, file.content, { encoding: 'utf8' });
-            console.log(chalk.greenBright(`📄 Created ${entityName}/${file.name}`));
-        } else {
-            console.log(chalk.yellowBright(`${entityName}/${file.name} already exists, skipping.`));
-        }
-    });
-
-    console.log(chalk.bold(chalk.greenBright(`\n✅ Created ${entityName} Module successfully!\n`)));
-    console.log(`ℹ️  Make sure to define ${chalk.bold("process.env.BASE_URL")} because the generated code depends on it.`);
-
-})();
-
-
-type ModuleTarget = "frontend" | "backend";
-
-
+type ModuleTarget = "frontend" | "backend" | "model";
