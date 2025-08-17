@@ -16,14 +16,12 @@ export async function getxxxEntityxxxList() {
 }
 
 export async function createxxxEntityxxx(title: string, description: string, notes: string) {
-    //TODO: dynamic properties
     const queryCmd = `xxxsqlInsertQueryxxx`;
     const [result] = await dbService.query<ResultSetHeader>(queryCmd, [title, description, notes]);
     return result.insertId;
 }
 
 export async function updatexxxEntityxxx(xxxentityxxxId: string, title: string, description: string, notes: string) {
-     //TODO: dynamic properties
     const queryCmd = `xxxsqlUpdateQueryxxx`;
     await dbService.query<ResultSetHeader>(queryCmd, [title, description, notes, xxxentityxxxId]);
 }
