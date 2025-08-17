@@ -122,6 +122,8 @@ function generateFiles(replaceValues: ReplaceValues, target: ModuleTarget) {
         const templatePath = path.join(templatesDir, fileName);
         let content = fs.readFileSync(templatePath, 'utf8');
 
+        content = content.replace(/xxxsqlInsertQueryxxx/g, replaceValues.sqlInsertQuery);
+        content = content.replace(/xxxsqlUpdateQueryxxx/g, replaceValues.sqlUpdateQuery);
         content = content.replace(/xxxEntityInterfacePropertiesxxx/g, replaceValues.interfaceProperties);
         content = content.replace(/{ title: "", field: "xxxEntityPropertiesTablexxx" },/g, replaceValues.tableProperties);
         content = content.replace(/let xxxsetPropertyCodexxx;/g, replaceValues.setValueTs);
@@ -153,8 +155,18 @@ function generateReplaceValues(entityName: string, entityDisplayName: string, pr
     let getValueTs = '';
     let interfaceProperties = '';
     let tableProperties = '';
+    let propertiesCsv = '';
+    let propertiesUpdatePart = '';
+
     const entityNameLowerCase = entityName.toLowerCase();
+
+
     for (const propertyName of propertyNames) {
+
+
+        propertiesCsv += propertyName + ", ";
+        propertiesUpdatePart += `${propertyName} = ?, `;
+
         propertiesHtml += `
                 <div class="row">
                     <div class="col-md">
@@ -174,7 +186,17 @@ function generateReplaceValues(entityName: string, entityDisplayName: string, pr
         tableProperties += `    { title: "${propertyName}", field: "${propertyName}", headerFilter:"input"},\n`;
 
     }
-    return { interfaceProperties, tableProperties, setValueTs, getValueTs, propertiesHtml, entityNameLowerCase, entityName, entityDisplayName };
+
+    // Generate a string with "? " repeated for each property
+    const questionMarks = Array(propertyNames.length).fill("?").join(", ").trim();
+    propertiesCsv = propertiesCsv.slice(0, -2); // remove last ", "
+    propertiesUpdatePart = propertiesUpdatePart.slice(0, -2); // remove last ", "
+
+    let sqlInsertQuery = `INSERT INTO ${entityNameLowerCase} (${propertiesCsv}) VALUES (${questionMarks})`;
+    let sqlUpdateQuery = `UPDATE ${entityNameLowerCase} SET ${propertiesUpdatePart} WHERE id = ?`;
+
+
+    return { interfaceProperties, tableProperties, setValueTs, getValueTs, propertiesHtml, entityNameLowerCase, entityName, entityDisplayName, sqlInsertQuery, sqlUpdateQuery };
 }
 
 interface ReplaceValues {
@@ -186,6 +208,8 @@ interface ReplaceValues {
     entityNameLowerCase: string;
     entityName: string;
     entityDisplayName: string;
+    sqlInsertQuery: string;
+    sqlUpdateQuery: string;
 }
 
 type ModuleTarget = "frontend" | "backend" | "model";

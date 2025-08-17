@@ -2,6 +2,9 @@
 ✅xxxentityxxx
 ✅xxxEntityDisplayNamexxx
 
+✅xxxsqlInsertQueryxxx -> INSERT INTO xxxentityxxx (title, description, notes) VALUES (?, ?, ?)
+✅xxxsqlUpdateQueryxxx -> UPDATE xxxentityxxx SET title = ?, description = ?, notes = ? WHERE id = ?
+    
 ✅xxxEntityInterfacePropertiesxxx (id is already set)
 ✅xxxEntityPropertiesInputsHtmlxxx in HTML
 ✅let xxxsetPropertyCodexxx;
