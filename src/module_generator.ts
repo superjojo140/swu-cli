@@ -4,6 +4,8 @@ import * as path from 'path';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { fileURLToPath } from 'url';
+import DbGenerator from './db_generator.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,10 +20,30 @@ const __dirname = path.dirname(__filename);
         generateFiles(replaceValues, target);
     }
 
+    await askForSqlGeneration(entityName, propertyNames);
+
     printModuleCreationStatus(entityName);
 })();
 
 
+async function askForSqlGeneration(tableName: string, propertyNames: string[]) {
+    const { shouldGenerate } = await inquirer.prompt([
+        {
+            type: 'confirm',
+            name: 'shouldGenerate',
+            message: `Do you want to auto-generate the SQL table for "${tableName}"?`,
+            default: true
+        }
+    ]);
+    if (shouldGenerate) {
+        const success = await DbGenerator.createTable(tableName, propertyNames);
+        if (success) {
+            console.log(chalk.greenBright(`✅ SQL table "${tableName}" generated successfully.`));
+        } else {
+            console.log(chalk.yellowBright(`⚠️ SQL table "${tableName}" already exists, skipping creation.`));
+        }
+    }
+}
 
 
 async function promptForEntityName() {
