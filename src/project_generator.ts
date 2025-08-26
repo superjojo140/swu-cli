@@ -134,7 +134,10 @@ async function createEnvFile() {
         .map(([key, value]) => `${key}=${value}`)
         .join('\n');
     fs.writeFileSync(targetEnvPath, newEnvContent);
-    fs.writeFileSync(path.join(process.cwd(), '.env.example'), envContent);
     console.log(chalk.green(`Generated: ${targetEnvPath}`));
+
+    const targetEnvExamplePath = path.join(process.cwd(), '.env.example');
+    fs.writeFileSync(targetEnvExamplePath, envContent);
+    console.log(chalk.green(`Created: ${targetEnvExamplePath}`));
 }
 
