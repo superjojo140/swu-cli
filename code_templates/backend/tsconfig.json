@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "module": "nodenext",
+        "sourceMap": true,
+        "target": "esnext",
+        "allowJs": true,
+        "esModuleInterop": true,
+        "moduleResolution": "nodenext"
+    },
+    "include": [
+        "./**/*.ts"
+    ],
+}
