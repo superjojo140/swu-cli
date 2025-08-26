@@ -23,6 +23,7 @@ const __dirname = path.dirname(__filename);
     await askForSqlGeneration(entityName, propertyNames);
 
     printModuleCreationStatus(entityName);
+    process.exit(0);
 })();
 
 

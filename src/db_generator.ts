@@ -10,7 +10,7 @@ export default class DbGenerator {
 
     static async createTable(tableName: string, properties: string[]) {
 
-        const [rows] = await DbGenerator.query(`SHOW TABLES LIKE ?`, [tableName]);
+        const [rows] = await DbGenerator.query(`SHOW TABLES LIKE '${tableName}'`);
         const tableExists = Array.isArray(rows) && rows.length === 1;
 
         if (!tableExists) {
