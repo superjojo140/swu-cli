@@ -13,6 +13,8 @@
 ✅ ->foreach-> xxxpropertyNamexxx
 
 
+xxxProjectNamexxx
+
 
 #Define
 ✅process.env.BASE_URL

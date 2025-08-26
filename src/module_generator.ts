@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import * as fs from 'fs';
 import * as path from 'path';
 import inquirer from 'inquirer';
@@ -10,7 +9,7 @@ import DbGenerator from './db_generator.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-(async () => {
+export async function generateModule() {
     const { entityName, entityDisplayName, propertyNames } = await askForUserInput();
     let replaceValues = generateReplaceValues(entityName, entityDisplayName, propertyNames);
 
@@ -24,7 +23,7 @@ const __dirname = path.dirname(__filename);
 
     printModuleCreationStatus(entityName);
     process.exit(0);
-})();
+}
 
 
 async function askForSqlGeneration(tableName: string, propertyNames: string[]) {
