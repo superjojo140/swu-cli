@@ -8,3 +8,6 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
     import XXXModule from "./XXX/module";
     XXXModule.init();
 */
+
+//[SWU Module Generator] Dont remove the following line:
+//xxxSWU_REGISTER_MODULESxxx

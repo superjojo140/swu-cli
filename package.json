@@ -27,7 +27,8 @@
     "inquirer": "^12.9.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.3",
-    "swu-core": "^1.0.0"
+    "swu-core": "^1.0.0",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",

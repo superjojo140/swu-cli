@@ -1,0 +1,12 @@
+# Webpack generated output
+public/webpack_app.js
+
+# Dependency directories
+node_modules/
+
+# dotenv environment variables file
+.env
+.env.test
+
+# vs code workspace variables
+.vscode

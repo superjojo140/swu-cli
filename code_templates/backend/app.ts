@@ -25,6 +25,8 @@ app.use(bodyParser.json());
 //      import XXXController from "./XXX/controller";
 // Register routes and controller
 //      app.use("/xxx", XXXController);
+//[SWU Module Generator] Dont remove the following line:
+//xxxSWU_REGISTER_MODULE_CONTROLLERSxxx
 
 // Error handler
 app.use(errorMiddleware.notFoundRoute);

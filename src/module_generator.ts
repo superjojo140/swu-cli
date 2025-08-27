@@ -15,11 +15,14 @@ export async function generateModule() {
 
     const targets: ModuleTarget[] = ["frontend", "backend", "model"];
     for (const target of targets) {
-        const moduleDir = createModuleDirectory(entityName, target);
+        createModuleDirectory(entityName, target);
         generateFiles(replaceValues, target);
     }
 
+    injectModuleRegistration(replaceValues);
+
     await askForSqlGeneration(entityName, propertyNames);
+    
 
     printModuleCreationStatus(entityName);
     process.exit(0);
@@ -214,12 +217,60 @@ function generateReplaceValues(entityName: string, entityDisplayName: string, pr
     propertiesCsv = propertiesCsv.slice(0, -2); // remove last ", "
     propertiesUpdatePart = propertiesUpdatePart.slice(0, -2); // remove last ", "
 
-    let sqlInsertQuery = `INSERT INTO ${entityNameLowerCase} (${propertiesCsv}) VALUES (${questionMarks})`;
-    let sqlUpdateQuery = `UPDATE ${entityNameLowerCase} SET ${propertiesUpdatePart} WHERE id = ?`;
+    let sqlInsertQuery = `INSERT INTO ${entityName} (${propertiesCsv}) VALUES (${questionMarks})`;
+    let sqlUpdateQuery = `UPDATE ${entityName} SET ${propertiesUpdatePart} WHERE id = ?`;
 
 
     return { interfaceProperties, tableProperties, setValueTs, getValueTs, propertiesHtml, entityNameLowerCase, entityName, entityDisplayName, sqlInsertQuery, sqlUpdateQuery };
 }
+
+
+function injectModuleRegistration(replaceValues: ReplaceValues) {
+    const appTsPath = path.join(process.cwd(), "src/backend/app.ts");
+
+    if (!fs.existsSync(appTsPath)) {
+        console.log(chalk.redBright(`❌ File ${chalk.bold(appTsPath)} not found. Controller registration aborted.`));
+        return;
+    }
+
+    let content = fs.readFileSync(appTsPath, "utf8");
+
+    const lines = content.split('\n');
+    const idx = lines.findIndex(line => line.includes('xxxSWU_REGISTER_MODULE_CONTROLLERSxxx'));
+    if (idx !== -1) {
+        const controllerImport = `import ${replaceValues.entityName}Controller from "./${replaceValues.entityName}/controller";`;
+        const controllerUse = `  app.use("/${replaceValues.entityNameLowerCase}", ${replaceValues.entityName}Controller);`;
+        lines.splice(idx + 1, 0, controllerImport, controllerUse);
+        content = lines.join('\n');
+    }
+    else {
+        console.log(chalk.yellowBright(`⚠️ Could not find 'xxxSWU_REGISTER_MODULE_CONTROLLERSxxx' in src/backend/app.ts, controller registration not injected.`));
+    }
+
+    fs.writeFileSync(appTsPath, content, { encoding: "utf8" });
+
+
+
+    // Inject module registration in frontend/index.ts
+    const frontendIndexPath = path.join(process.cwd(), "src/frontend/index.ts");
+    if (!fs.existsSync(frontendIndexPath)) {
+        console.log(chalk.redBright(`❌ File ${chalk.bold(frontendIndexPath)} not found. Module registration aborted.`));
+    } else {
+        let frontendContent = fs.readFileSync(frontendIndexPath, "utf8");
+        const frontendLines = frontendContent.split('\n');
+        const frontendIdx = frontendLines.findIndex(line => line.includes('xxxSWU_REGISTER_MODULESxxx'));
+        if (frontendIdx !== -1) {
+            const moduleImport = `import ${replaceValues.entityName}Module from "./${replaceValues.entityName}/module";`;
+            const moduleInit = `    ${replaceValues.entityName}Module.init();`;
+            frontendLines.splice(frontendIdx + 1, 0, moduleImport, moduleInit);
+            frontendContent = frontendLines.join('\n');
+            fs.writeFileSync(frontendIndexPath, frontendContent, { encoding: "utf8" });
+        } else {
+            console.log(chalk.yellowBright(`⚠️ Could not find 'xxxSWU_REGISTER_MODULESxxx' in src/frontend/index.ts, module registration not injected.`));
+        }
+    }
+}
+
 
 interface ReplaceValues {
     interfaceProperties: string;

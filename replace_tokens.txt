@@ -15,6 +15,9 @@
 
 xxxProjectNamexxx
 
+xxxSWU_REGISTER_MODULE_CONTROLLERSxxx (backend)
+xxxSWU_REGISTER_MODULESxxx (frontend)
+
 
 #Define
 ✅process.env.BASE_URL

@@ -12,13 +12,14 @@ const __dirname = path.dirname(__filename);
 export async function generateProject() {
     const projectName = await askForProjectName();
 
-    const { frontendDir, backendDir } = createProjectDirectories();
+    const { frontendDir, backendDir, modelDir } = createProjectDirectories();
 
-    await createEnvFile();
     createFrontendFiles(frontendDir, projectName);
     createBackendFiles(backendDir, projectName);
+    await createEnvFile();
+    copyAssets();
+    await createNpmScripts();
 
-    process.exit(0);
 };
 
 
@@ -80,15 +81,18 @@ function createProjectDirectories() {
     const srcDir = path.join(projectRoot, 'src');
     const frontendDir = path.join(srcDir, 'frontend');
     const backendDir = path.join(srcDir, 'backend');
+    const modelDir = path.join(srcDir, 'model');
 
     fs.mkdirSync(frontendDir, { recursive: true });
     fs.mkdirSync(backendDir, { recursive: true });
+    fs.mkdirSync(modelDir, { recursive: true });
 
     console.log(chalk.green(`Created folders:
+    - ${modelDir}
     - ${frontendDir}
     - ${backendDir}`));
 
-    return { srcDir, frontendDir, backendDir };
+    return { srcDir, frontendDir, backendDir, modelDir };
 }
 
 async function askForProjectName() {
@@ -105,39 +109,128 @@ async function askForProjectName() {
 
 
 async function createEnvFile() {
-    console.log(chalk.blue('Preparing to generate your .env file. You will be prompted to enter values for each environment variable.'));
+    const { fillEnvNow } = await inquirer.prompt([
+        {
+            type: 'confirm',
+            name: 'fillEnvNow',
+            message: 'Do you want to fill in the environment variables now?',
+            default: true
+        }
+    ]);
 
-    const exampleEnvPath = path.resolve(__dirname, './../code_templates/.env.example');
-    const targetEnvPath = path.join(process.cwd(), '.env');
-
-    if (!fs.existsSync(exampleEnvPath)) {
-        console.log(chalk.red('No .env.example file found.'));
-        return;
-    }
-
+    const exampleEnvPath = path.resolve(__dirname, './../code_templates/config/.env.example');
     const envContent = fs.readFileSync(exampleEnvPath, 'utf-8');
-    const envLines = envContent.split('\n').filter(line => line.trim() !== '' && !line.trim().startsWith('#'));
 
-    const questions = envLines.map(line => {
-        const [key, defaultValue = ''] = line.split('=');
-        return {
-            type: 'input',
-            name: key.trim(),
-            message: `Enter value for ${key.trim()}:`,
-            default: defaultValue.trim()
-        };
-    });
+    if (fillEnvNow) {
 
-    //@ts-expect-error (fuck typing :-X)
-    const answers = await inquirer.prompt(questions);
-    const newEnvContent = Object.entries(answers)
-        .map(([key, value]) => `${key}=${value}`)
-        .join('\n');
-    fs.writeFileSync(targetEnvPath, newEnvContent);
-    console.log(chalk.green(`Generated: ${targetEnvPath}`));
+        console.log(chalk.blue('Preparing to generate your .env file. You will be prompted to enter values for each environment variable. Press Enter to use the default value from .env.example'));
+
+        const targetEnvPath = path.join(process.cwd(), '.env');
+
+        if (!fs.existsSync(exampleEnvPath)) {
+            console.log(chalk.red('No .env.example file found.'));
+            return;
+        }
+
+        const envLines = envContent.split('\n').filter(line => line.trim() !== '' && !line.trim().startsWith('#'));
+
+        const questions = envLines.map(line => {
+            const [key, defaultValue = ''] = line.split('=');
+            return {
+                type: 'input',
+                name: key.trim(),
+                message: `Enter value for ${key.trim()}:`,
+                default: defaultValue.trim()
+            };
+        });
+
+        //@ts-expect-error (fuck typing :-X)
+        const answers = await inquirer.prompt(questions);
+        const newEnvContent = Object.entries(answers)
+            .map(([key, value]) => `${key}=${value}`)
+            .join('\n');
+        fs.writeFileSync(targetEnvPath, newEnvContent);
+        console.log(chalk.green(`Generated: ${targetEnvPath}`));
+    }
+    else {
+        const targetEnvPath = path.join(process.cwd(), '.env');
+        fs.writeFileSync(targetEnvPath, envContent);
+
+    }
 
     const targetEnvExamplePath = path.join(process.cwd(), '.env.example');
     fs.writeFileSync(targetEnvExamplePath, envContent);
     console.log(chalk.green(`Created: ${targetEnvExamplePath}`));
+}
+
+
+
+function copyAssets() {
+    const assetsSrcDir = path.resolve(__dirname, './../code_templates/assets');
+    const assetsDestDir = path.join(process.cwd(), 'public/assets');
+
+    function copyRecursive(src: string, dest: string) {
+        if (fs.statSync(src).isDirectory()) {
+            fs.mkdirSync(dest, { recursive: true });
+            for (const entry of fs.readdirSync(src)) {
+                copyRecursive(path.join(src, entry), path.join(dest, entry));
+            }
+        } else {
+            fs.mkdirSync(path.dirname(dest), { recursive: true });
+            fs.copyFileSync(src, dest);
+            console.log(chalk.blue(`Copied asset: ${dest}`));
+        }
+    }
+
+    if (fs.existsSync(assetsSrcDir)) {
+        copyRecursive(assetsSrcDir, assetsDestDir);
+        console.log(chalk.green(`Assets copied to: ${assetsDestDir}`));
+    } else {
+        console.log(chalk.yellow('No assets directory found to copy.'));
+    }
+
+    const gitignoreSrcPath = path.resolve(__dirname, './../code_templates/config/.gitignore');
+    const gitignoreDestPath = path.join(process.cwd(), '.gitignore');
+
+    if (fs.existsSync(gitignoreSrcPath)) {
+        fs.copyFileSync(gitignoreSrcPath, gitignoreDestPath);
+        console.log(chalk.green(`Copied .gitignore to: ${gitignoreDestPath}`));
+    } else {
+        console.log(chalk.yellow('No .gitignore file found to copy.'));
+    }
+}
+
+async function createNpmScripts() {
+    const { overwriteNpmScripts } = await inquirer.prompt([
+        {
+            type: 'confirm',
+            name: 'overwriteNpmScripts',
+            message: 'Do you want to generate npm scripts in package.json?',
+            default: true
+        }
+    ]);
+
+    if (!overwriteNpmScripts) {
+        console.log(chalk.yellow('Skipped npm scripts generation.'));
+        return;
+    }
+
+    const packageJsonPath = path.join(process.cwd(), 'package.json');
+    if (!fs.existsSync(packageJsonPath)) {
+        console.log(chalk.red('No package.json found in the current directory.'));
+        return;
+    }
+
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+    packageJson.scripts = {
+        ...packageJson.scripts,
+        "start": "cd src/backend && ts-node app.ts",
+        "nodemon": "cd src/backend && nodemon --exec ts-node app.ts",
+        "build": "cd src/frontend && webpack",
+        "build-dev": "cd src/frontend && webpack --watch"
+    };
+
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+    console.log(chalk.green('Npm scripts have been generated and written to package.json.'));
 }
 
