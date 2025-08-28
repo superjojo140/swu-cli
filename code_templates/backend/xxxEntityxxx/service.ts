@@ -1,6 +1,6 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import * as dbService from './../database/service';
-import {xxxEntityxxx} from '../../model/xxxEntityxxx/model'
+import { xxxEntityxxx } from '../../model/xxxEntityxxx/model'
 
 
 export async function getxxxEntityxxx(xxxentityxxxId: string) {
@@ -15,15 +15,17 @@ export async function getxxxEntityxxxList() {
     return rows as xxxEntityxxx[];
 }
 
-export async function createxxxEntityxxx(title: string, description: string, notes: string) {
+export async function createxxxEntityxxx(xxxentityDataxxx: Omit<xxxEntityxxx, "id">) {
+    const { xxxPropertiesCsvxxx } = xxxentityDataxxx;
     const queryCmd = `xxxsqlInsertQueryxxx`;
-    const [result] = await dbService.query<ResultSetHeader>(queryCmd, [title, description, notes]);
+    const [result] = await dbService.query<ResultSetHeader>(queryCmd, [xxxPropertiesCsvxxx]);
     return result.insertId;
 }
 
-export async function updatexxxEntityxxx(xxxentityxxxId: string, title: string, description: string, notes: string) {
+export async function updatexxxEntityxxx(xxxentityDataxxx: xxxEntityxxx) {
+    const { id, xxxPropertiesCsvxxx } = xxxentityDataxxx;
     const queryCmd = `xxxsqlUpdateQueryxxx`;
-    await dbService.query<ResultSetHeader>(queryCmd, [title, description, notes, xxxentityxxxId]);
+    await dbService.query<ResultSetHeader>(queryCmd, [xxxPropertiesCsvxxx , id]);
 }
 
 export async function deletexxxEntityxxx(xxxentityxxxId: string) {

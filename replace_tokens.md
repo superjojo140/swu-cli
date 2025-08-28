@@ -1,3 +1,4 @@
+# Module Scope
 ✅xxxEntityxxx
 ✅xxxentityxxx
 ✅xxxEntityDisplayNamexxx
@@ -9,15 +10,18 @@
 ✅xxxEntityPropertiesInputsHtmlxxx in HTML
 ✅let xxxsetPropertyCodexxx;
 ✅let xxxgetPropertyCodexxx;
- xxxEntityPropertiesInputsHtmlxxx : "",
+✅ xxxEntityPropertiesInputsHtmlxxx : "",
 ✅ ->foreach-> xxxpropertyNamexxx
 
+✅xxxSWU_REGISTER_MODULE_CONTROLLERSxxx (backend)
+✅xxxSWU_REGISTER_MODULESxxx (frontend)
 
-xxxProjectNamexxx
-
-xxxSWU_REGISTER_MODULE_CONTROLLERSxxx (backend)
-xxxSWU_REGISTER_MODULESxxx (frontend)
+✅xxxPropertiesCsvxxx (without id)
 
 
-#Define
+
+# Project Scope
+✅xxxProjectNamexxx
+
+# Define
 ✅process.env.BASE_URL

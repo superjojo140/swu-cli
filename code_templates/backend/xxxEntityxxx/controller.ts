@@ -1,5 +1,6 @@
-import express, { NextFunction, Request as ExpressRequest, Response as ExpressResponse} from "express";
+import express, { NextFunction, Request as ExpressRequest, Response as ExpressResponse } from "express";
 import * as xxxentityxxxService from "./service";
+import { xxxEntityxxx } from "../../model/xxxEntityxxx/model.js";
 
 const router = express.Router();
 //Register own routes
@@ -29,11 +30,10 @@ async function getxxxEntityxxx(req: ExpressRequest, res: ExpressResponse, next: 
 
 async function createxxxEntityxxx(req: ExpressRequest, res: ExpressResponse, next: NextFunction) {
     try {
-        const title = req.body.title;
-        const description = req.body.description;
-        const notes = req.body.notes;
 
-        const xxxentityxxxId = await xxxentityxxxService.createxxxEntityxxx(title, description, notes);
+        const xxxentityxxxData: Omit<xxxEntityxxx, "id"> = req.body;
+
+        const xxxentityxxxId = await xxxentityxxxService.createxxxEntityxxx(xxxentityxxxData);
         res.status(200).json({ status: "success", message: "Created xxxentityxxx successfully", xxxentityxxxId: xxxentityxxxId });
     }
     catch (e) { next(e); }
@@ -41,12 +41,12 @@ async function createxxxEntityxxx(req: ExpressRequest, res: ExpressResponse, nex
 
 async function updatexxxEntityxxx(req: ExpressRequest, res: ExpressResponse, next: NextFunction) {
     try {
-        const title = req.body.title;
-        const description = req.body.description;
-        const notes = req.body.notes;
-        const xxxentityxxxId = req.params.xxxentityxxxId;
+        const xxxentityxxxData: xxxEntityxxx = {
+            id: req.params.xxxentityxxxId,
+            ...req.body
+        }
 
-        await xxxentityxxxService.updatexxxEntityxxx(xxxentityxxxId, title, description, notes);
+        await xxxentityxxxService.updatexxxEntityxxx(xxxentityxxxData);
         res.status(200).json({ status: "success", message: "Updated xxxentityxxx successfully" });
     }
     catch (e) { next(e); }

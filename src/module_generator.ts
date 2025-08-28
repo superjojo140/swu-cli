@@ -22,7 +22,7 @@ export async function generateModule() {
     injectModuleRegistration(replaceValues);
 
     await askForSqlGeneration(entityName, propertyNames);
-    
+
 
     printModuleCreationStatus(entityName);
     process.exit(0);
@@ -154,6 +154,7 @@ function generateFiles(replaceValues: ReplaceValues, target: ModuleTarget) {
         content = content.replace(/let xxxsetPropertyCodexxx;/g, replaceValues.setValueTs);
         content = content.replace(/let xxxgetPropertyCodexxx;/g, replaceValues.getValueTs);
         content = content.replace(/xxxEntityPropertiesInputsHtmlxxx/g, replaceValues.propertiesHtml);
+        content = content.replace(/xxxPropertiesCsvxxx/g, replaceValues.propertiesCsv);
         content = content.replace(/xxxEntityDisplayNamexxx/g, replaceValues.entityDisplayName);
         content = content.replace(/xxxEntityxxx/g, replaceValues.entityName);
         content = content.replace(/xxxentityxxx/g, replaceValues.entityNameLowerCase);
@@ -221,7 +222,7 @@ function generateReplaceValues(entityName: string, entityDisplayName: string, pr
     let sqlUpdateQuery = `UPDATE ${entityName} SET ${propertiesUpdatePart} WHERE id = ?`;
 
 
-    return { interfaceProperties, tableProperties, setValueTs, getValueTs, propertiesHtml, entityNameLowerCase, entityName, entityDisplayName, sqlInsertQuery, sqlUpdateQuery };
+    return { interfaceProperties, tableProperties, setValueTs, getValueTs, propertiesHtml, propertiesCsv, entityNameLowerCase, entityName, entityDisplayName, sqlInsertQuery, sqlUpdateQuery };
 }
 
 
@@ -278,6 +279,7 @@ interface ReplaceValues {
     setValueTs: string;
     getValueTs: string;
     propertiesHtml: string;
+    propertiesCsv: string;
     entityNameLowerCase: string;
     entityName: string;
     entityDisplayName: string;
