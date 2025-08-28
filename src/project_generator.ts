@@ -196,7 +196,7 @@ function copyAssets() {
         fs.copyFileSync(gitignoreSrcPath, gitignoreDestPath);
         console.log(chalk.green(`Copied .gitignore to: ${gitignoreDestPath}`));
     } else {
-        console.log(chalk.yellow('No .gitignore file found to copy.'));
+        console.log(chalk.yellow(`No .gitignore file found at ${gitignoreSrcPath} to copy.`));
     }
 }
 
