@@ -17,6 +17,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "files": [
+    "dist",
+    "code_templates"
+  ],
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.0.0",
     "body-parser": "^2.2.0",
@@ -39,6 +43,6 @@
     "@types/node": "^24.2.0"
   },
   "bin": {
-    "swu-gen": "./dist/module_generator.js"
+    "swu": "./dist/index.js"
   }
 }
