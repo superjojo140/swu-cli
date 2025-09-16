@@ -10,6 +10,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export async function generateModule() {
+    checkIfProjectExists(); //exit if not initialized
+
     const { entityName, entityDisplayName, propertyNames } = await askForUserInput();
     let replaceValues = generateReplaceValues(entityName, entityDisplayName, propertyNames);
 
@@ -28,6 +30,14 @@ export async function generateModule() {
     process.exit(0);
 }
 
+
+function checkIfProjectExists() {
+    const webpackConfigPath = path.join(process.cwd(), "src/frontend/webpack.config.js");
+    if (!fs.existsSync(webpackConfigPath)) {
+        console.log(chalk.redBright(`❌ It seems that your SWU-Project was not initialized. Missing ${chalk.bold(webpackConfigPath)}. Please run "swu init" in your project root.`));
+        process.exit(1);
+    }
+}
 
 async function askForSqlGeneration(tableName: string, propertyNames: string[]) {
     const { shouldGenerate } = await inquirer.prompt([

@@ -17,7 +17,7 @@ if (!command) {
     command = answer.selectedCommand;
 }
 
-if (command === 'project') {
+if (command === 'project' || command === 'init') {
     generateProject();
 } else if (command === 'module') {
     generateModule();
