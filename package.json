@@ -19,7 +19,8 @@
   },
   "files": [
     "dist",
-    "code_templates"
+    "code_templates",
+    "code_templates/config/.gitignore"
   ],
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.0.0",

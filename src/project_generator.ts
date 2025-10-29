@@ -189,7 +189,7 @@ function copyAssets() {
         console.log(chalk.yellow('No assets directory found to copy.'));
     }
 
-    const gitignoreSrcPath = path.resolve(__dirname, './../code_templates/config/.gitignore');
+    const gitignoreSrcPath = path.resolve(__dirname, './../code_templates/config/.gitignore_template');
     const gitignoreDestPath = path.join(process.cwd(), '.gitignore');
 
     if (fs.existsSync(gitignoreSrcPath)) {
